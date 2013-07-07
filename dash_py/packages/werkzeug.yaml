@@ -1,0 +1,5 @@
+name: Werkzeug
+type: html
+format: zip
+url: http://werkzeug.pocoo.org/docs/werkzeug-docs.zip
+icon: _static/werkzeug.png

@@ -1,0 +1,5 @@
+name: Pygments
+type: html
+format: tar
+url: http://pygments.org/docs/download/pygmentsdocs.tar.gz
+icon: http://pygments.org/media/icon.png

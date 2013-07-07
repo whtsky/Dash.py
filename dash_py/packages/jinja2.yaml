@@ -1,4 +1,5 @@
 name: Jinja2
-type: zip
+type: html
+format: zip
 url: http://jinja.pocoo.org/docs/jinja-docs.zip
 icon: _static/jinja-small.png

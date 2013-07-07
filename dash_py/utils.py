@@ -4,6 +4,7 @@ import logging
 
 try:
     import curses
+    assert curses
 except ImportError:
     curses = None
 
@@ -16,8 +17,6 @@ def enable_pretty_logging(level='info'):
 
     This is called automatically by `parse_command_line`.
     """
-    if level == 'debug':
-        g.interrupt = True
     logger.setLevel(getattr(logging, level.upper()))
 
     if not logger.handlers:

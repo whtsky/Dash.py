@@ -8,7 +8,7 @@ setup(
     version=dash_py.__version__,
     description=dash_py.__doc__.strip(),
     long_description=open('README.rst').read(),
-    url='http://github.com/hynek/doc2dash/',
+    url='https://github.com/whtsky/Dash.py',
     license=dash_py.__license__,
     author=dash_py.__author__,
     author_email='whtsky@gmail.com',

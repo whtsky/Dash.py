@@ -2,18 +2,7 @@ import os
 import shutil
 import time
 
-try:
-    from cStringIO import StringIO
-    assert StringIO
-except ImportError:
-    try:
-        from StringIO import StringIO
-        assert StringIO
-    except ImportError:
-        from io import StringIO
-        assert StringIO
-
-import requests
+from .uncompress import uncompress
 from .utils import logger
 
 DEFAULT_DOCSET_PATH = os.path.expanduser(
@@ -34,9 +23,20 @@ def generate_docset(package, document_path):
     docset_path = os.path.join(DEFAULT_DOCSET_PATH, "%s.docset" % name)
     if os.path.exists(docset_path):
         shutil.rmtree(docset_path)
-    command = 'doc2dash --name %s --destination "%s" --quiet' % (name, DEFAULT_DOCSET_PATH)
+    command = 'doc2dash --name %s --destination "%s" --quiet' % (
+        name, DEFAULT_DOCSET_PATH)
     if "icon" in package:
-        command += " --icon %s" % os.path.join(document_path, package["icon"])
+        icon_path = package["icon"]
+        if "//" in icon_path:
+            import requests
+            r = requests.get(icon_path)
+            if r.status_code == 200:
+                icon_path = random_path() + '.png'
+                with open(icon_path, "w") as f:
+                    f.write(r.content)
+                command += " --icon %s" % icon_path
+        else:
+            command += " --icon %s" % os.path.join(document_path, icon_path)
     command += " %s" % document_path
     os.system(command)
 
@@ -45,22 +45,11 @@ def generate_docset(package, document_path):
     add_to_dash(docset_path)
 
 
-def zip_installer(package):
+def html_installer(package):
     name = package["name"]
-    import requests
     logger.info("Downloading package %s" % name)
     dirname = random_path()
-
-    zip_content = requests.get(package["url"]).content
-
-    f = StringIO()
-    f.write(zip_content)
-
-    logger.info("Unzipping package %s" % name)
-    import zipfile
-    with zipfile.ZipFile(f) as z:
-        z.extractall(dirname)
-    f.close()
+    uncompress(package["url"], dirname, package.get("format", None))
 
     if "floder_name" not in package:
         files = os.listdir(dirname)
@@ -71,38 +60,26 @@ def zip_installer(package):
     return generate_docset(package, document_path)
 
 
-def rtfd_docset_installer(package):
+def docset(package):
     name = package["name"]
     logger.info("Downloading package %s" % name)
-    import requests
-    r = requests.get(package["url"])
+    uncompress(package["url"], DEFAULT_DOCSET_PATH, "tar")
 
-    f = StringIO()
-    f.write(r.content)
-    f.seek(0)
-
-    import tarfile
-    with tarfile.open(fileobj=f) as t:
-        t.extractall(DEFAULT_DOCSET_PATH)
-    f.close()
-
-    docset_path = os.path.join(DEFAULT_DOCSET_PATH, name+'.docset')
+    docset_path = os.path.join(DEFAULT_DOCSET_PATH, name + '.docset')
     add_to_dash(docset_path)
 
 
 INSTALLER = {
-    'zip': zip_installer,
-    'rtfd_docset': rtfd_docset_installer,
+    'html': html_installer,
+    'docset': docset,
 }
 
 
 def install_package(package):
-    name = package["name"]
     type = package["type"]
     if type not in INSTALLER:
         logger.error("Unknown type %s." % type)
-    
-    installer = INSTALLER[type]
-    
-    installer(package)
 
+    installer = INSTALLER[type]
+
+    installer(package)

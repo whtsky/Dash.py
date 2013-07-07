@@ -2,7 +2,7 @@
 Dash.py
 
 Usage:
-    dash.py install <name>
+    dash.py install <name>...
     dash.py --version
 
 Options:
@@ -30,16 +30,25 @@ parguments = Parguments(__doc__, version=dash_py.__version__)
 def install(name):
     """
     Usage:
-        dash.py install <name>
+        dash.py install <name>...
 
     Options:
         -h --help             Show this screen and exit.
     """
+    if isinstance(name, list):
+        return [install(n) for n in name]
+
     name = name.lower()
-    
+    url = "https://raw.github.com/whtsky/Dash.py/" \
+          "master/dash_py/packages/%s.yaml" % name
+    r = requests.head(url)
+    if r.status_code == 200:
+        r = requests.get(url)
+        package = yaml.load(r.content)
+        install_package(package)
+        return
 
     # Try to download document from rtfd
-    import requests
     r = requests.get("https://readthedocs.org/projects/%s/downloads/" % name)
     if r.status_code != 200:
         logger.error("Can't find package %s" % name)
@@ -56,10 +65,12 @@ def install(name):
         if requests.head(url).status_code == 200:
             install_package({
                 "name": name,
-                "type": "rtfd_docset",
+                "type": "docset",
                 "url": url
             })
             return
+    logger.error("Can't find package %s" % name)
+    return
 
 
 def main():
