@@ -1,0 +1,4 @@
+name: Flask
+type: zip
+url: http://flask.pocoo.org/docs/flask-docs.zip
+icon: _static/flask.png
