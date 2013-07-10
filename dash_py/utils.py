@@ -22,8 +22,8 @@ except ImportError:
 def download_and_extract(package, extract_path):
     name = package["name"]
     url = package["url"]
-    type = package["type"]
-    if type == 'git':
+    format = package["format"]
+    if format == 'git':
         logger.info("Cloning package %s" % name)
         os.system("git clone %s %s" % (url, extract_path))
         return
@@ -35,9 +35,9 @@ def download_and_extract(package, extract_path):
 
     file = None
 
-    if type == 'zip':
+    if format == 'zip':
         file = zipfile.ZipFile(f)
-    elif type == 'tar':
+    elif format == 'tar':
         file = tarfile.open(fileobj=f)
 
     file.extractall(extract_path)

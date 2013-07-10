@@ -69,6 +69,7 @@ def docset(package):
 
 def sphinx(package):
     repo_path = random_path()
+    download_and_extract(package, repo_path)
     doc_path = package.get("sphinx_doc_path", "docs")
     doc_path = os.path.join(repo_path, doc_path)
 
