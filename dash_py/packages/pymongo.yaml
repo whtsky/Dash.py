@@ -1,0 +1,5 @@
+name: PyMongo
+type: sphinx
+format: git
+url: https://github.com/mongodb/mongo-python-driver
+sphinx_doc_path: doc
