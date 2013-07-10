@@ -19,9 +19,9 @@ def test():
         path = os.path.join(PACKAGES_PATH, f)
         package = yaml.load(open(path, "r").read())
         name = package["name"]
-        call("dash.py install %s" % name.lower())
+        call("dash.py install %s" % name.lower(), silence=False)
         assert_docset_exists(name)
 
     # Download from RTFD
-    call("dash.py install requests")
+    call("dash.py install requests", silence=False)
     assert_docset_exists("requests")
