@@ -38,13 +38,23 @@ def install(name):
     if isinstance(name, list):
         return [install(n) for n in name]
 
+    content = ""
     name = name.lower()
-    url = "https://raw.github.com/whtsky/Dash.py/" \
-          "master/dash_py/packages/%s.yaml" % name
-    r = requests.head(url)
-    if r.status_code == 200:
-        r = requests.get(url)
-        package = yaml.load(r.content)
+    if os.path.exists(name):
+        content = open(name, "r").read()
+    else:
+        if '//' in name:
+            url = name
+        else:
+            url = "https://raw.github.com/whtsky/Dash.py/" \
+                  "master/dash_py/packages/%s.yaml" % name
+        r = requests.head(url)
+        if r.status_code == 200:
+            r = requests.get(url)
+            content = r.content
+
+    if content:
+        package = yaml.load(content)
         install_package(package)
         return
 
