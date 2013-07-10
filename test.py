@@ -17,7 +17,7 @@ def test():
         if not f.endswith('.yaml'):
             continue
         path = os.path.join(PACKAGES_PATH, f)
-        package = yaml.load(open(f, "r").read())
+        package = yaml.load(open(path, "r").read())
         name = package["name"]
         call("dash.py install %s" % name.lower())
         assert_docset_exists(name)
