@@ -80,7 +80,6 @@ def install(name):
             })
             return
     logger.error("Can't find package %s" % name)
-    return
 
 
 def main():

@@ -35,4 +35,6 @@ setup(
         'Topic :: Software Development :: Documentation',
         'Topic :: Text Processing',
     ],
+    tests_require=['nose'],
+    test_suite='nose.collector',
 )
