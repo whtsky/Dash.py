@@ -95,6 +95,11 @@ class _LogFormatter(logging.Formatter):
         logging.Formatter.__init__(self, *args, **kwargs)
         self._color = color
         if color:
+
+            try:
+                assert unicode
+            except NameError:
+                unicode = str
             # The curses module has some str/bytes confusion in
             # python3.  Until version 3.2.3, most methods return
             # bytes, but only accept strings.  In addition, we want to
