@@ -2,8 +2,7 @@ import os
 import shutil
 import time
 
-from .utils import download_and_extract
-from .utils import logger
+from .utils import download_and_extract, logger, call
 
 DEFAULT_DOCSET_PATH = os.path.expanduser(
     '~/Library/Application Support/dash.py/DocSets'
@@ -14,7 +13,7 @@ random_path = lambda: os.path.join("/tmp", str(time.time()))
 
 def add_to_dash(docset_path):
     logger.info("Adding package to Dash")
-    os.system('open -a dash "%s"' % docset_path)
+    call('open -a dash "%s"' % docset_path)
 
 
 def generate_docset(package, document_path):
@@ -38,11 +37,12 @@ def generate_docset(package, document_path):
         else:
             command += " --icon %s" % os.path.join(document_path, icon_path)
     command += " %s" % document_path
-    os.system(command)
+    if call(command):
+        add_to_dash(docset_path)
+    else:
+        logger.error("Can't generate docset for package %s" % name)
 
     shutil.rmtree(document_path)
-
-    add_to_dash(docset_path)
 
 
 def html_installer(package):
@@ -74,9 +74,11 @@ def sphinx(package):
     doc_path = os.path.join(repo_path, doc_path)
 
     document_path = random_path()
-    os.system("sphinx-build -b html %s %s" % (doc_path, document_path))
+    if call("sphinx-build -b html %s %s" % (doc_path, document_path)):
+        generate_docset(package, document_path)
+    else:
+        logger.error("Can't build doc for package %s" % package["name"])
     shutil.rmtree(repo_path)
-    generate_docset(package, document_path)
 
 
 INSTALLER = {
