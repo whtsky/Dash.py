@@ -1,0 +1,5 @@
+name: Sphinx
+type: sphinx
+format: zip
+url: https://bitbucket.org/birkenfeld/sphinx/get/default.zip
+sphinx_doc_path: doc
