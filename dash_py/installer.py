@@ -2,7 +2,7 @@ import os
 import shutil
 import time
 
-from .uncompress import uncompress
+from .utils import download_and_extract
 from .utils import logger
 
 DEFAULT_DOCSET_PATH = os.path.expanduser(
@@ -46,10 +46,8 @@ def generate_docset(package, document_path):
 
 
 def html_installer(package):
-    name = package["name"]
-    logger.info("Downloading package %s" % name)
     dirname = random_path()
-    uncompress(package["url"], dirname, package.get("format", None))
+    download_and_extract(package, dirname)
 
     if "floder_name" not in package:
         files = os.listdir(dirname)
@@ -62,16 +60,24 @@ def html_installer(package):
 
 def docset(package):
     name = package["name"]
-    logger.info("Downloading package %s" % name)
-    uncompress(package["url"], DEFAULT_DOCSET_PATH, "tar")
+    package["type"] = "tar"
+    download_and_extract(package, DEFAULT_DOCSET_PATH)
 
     docset_path = os.path.join(DEFAULT_DOCSET_PATH, name + '.docset')
     add_to_dash(docset_path)
 
 
+def sphinx(package):
+    name = package["name"]
+    repo_path = random_path()
+    doc_path = package.get("sphinx_doc_path", "docs")
+    doc_path = os.path.join(repo_path, doc_path)
+
+
 INSTALLER = {
     'html': html_installer,
     'docset': docset,
+    'sphinx': sphinx
 }
 
 

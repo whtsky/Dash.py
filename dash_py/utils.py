@@ -1,12 +1,49 @@
+import os
 import sys
 import time
 import logging
+import zipfile
+import tarfile
+import requests
 
 try:
     import curses
     assert curses
 except ImportError:
     curses = None
+
+try:
+    from cStringIO import StringIO
+    assert StringIO
+except ImportError:
+    from io import StringIO
+
+
+def download_and_extract(package, extract_path):
+    name = package["name"]
+    url = package["url"]
+    type = package["type"]
+    if type == 'git':
+        logger.info("Cloning package %s" % name)
+        os.system("git clone %s %s" % (url, extract_path))
+        return
+
+    logger.info("Downloading package %s" % name)
+    f = StringIO()
+    f.write(requests.get(url).content)
+    f.seek(0)
+
+    file = None
+
+    if type == 'zip':
+        file = zipfile.ZipFile(f)
+    elif type == 'tar':
+        file = tarfile.open(fileobj=f)
+
+    file.extractall(extract_path)
+    file.close()
+    f.close()
+
 
 
 logger = logging.getLogger("dash.py")
