@@ -9,7 +9,7 @@ from dash_py.utils import call
 def assert_docset_exists(name):
     plist_path = os.path.join(DEFAULT_DOCSET_PATH, '%s.docset' % name,
                               'Contents/Info.plist')
-    assert os.path.exists(plist_path)
+    assert os.path.exists(plist_path), name
 
 
 def test():
