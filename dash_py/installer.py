@@ -55,7 +55,7 @@ def html_installer(package):
             package["floder_name"] = files[0]
 
     document_path = os.path.join(dirname, package.get("floder_name", ""))
-    return generate_docset(package, document_path)
+    generate_docset(package, document_path)
 
 
 def docset(package):
@@ -68,10 +68,14 @@ def docset(package):
 
 
 def sphinx(package):
-    name = package["name"]
     repo_path = random_path()
     doc_path = package.get("sphinx_doc_path", "docs")
     doc_path = os.path.join(repo_path, doc_path)
+
+    document_path = random_path()
+    os.system("sphinx-build -b html %s %s" % (doc_path, document_path))
+    shutil.rmtree(repo_path)
+    generate_docset(package, document_path)
 
 
 INSTALLER = {
