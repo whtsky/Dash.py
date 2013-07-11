@@ -121,12 +121,12 @@ class _LogFormatter(logging.Formatter):
             # bytes, but only accept strings.  In addition, we want to
             # output these strings with the logging module, which
             # works with unicode strings.  The explicit calls to
-            # unicode() below are harmless in python2 but will do the
+            # unicode_type() below are harmless in python2 but will do the
             # right conversion in python 3.
             fg_color = (curses.tigetstr("setaf") or
                         curses.tigetstr("setf") or "")
             if (3, 0) < sys.version_info < (3, 2, 3):
-                fg_color = unicode(fg_color, "ascii")
+                fg_color = unicode_type(fg_color, "ascii")
             self._colors = {
                 logging.DEBUG: unicode_type(curses.tparm(fg_color, 4),
                                             "ascii"),  # Blue
@@ -137,7 +137,7 @@ class _LogFormatter(logging.Formatter):
                 logging.ERROR: unicode_type(curses.tparm(fg_color, 1),
                                             "ascii"),  # Red
             }
-            self._normal = unicode(curses.tigetstr("sgr0"), "ascii")
+            self._normal = unicode_type(curses.tigetstr("sgr0"), "ascii")
 
     def format(self, record):
         try:
