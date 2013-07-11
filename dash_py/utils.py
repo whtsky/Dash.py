@@ -69,7 +69,7 @@ def download_and_extract(package, extract_path):
         logger.error("Can't download package %s" % name)
         sys.exit(5)
     f = StringIO()
-    f.write(bytes_type(r.content))
+    f.write(str(r.content))
     f.seek(0)
 
     file = None
