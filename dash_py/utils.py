@@ -21,6 +21,26 @@ try:
 except ImportError:
     from io import StringIO
 
+# Fake unicode literal support:  Python 3.2 doesn't have the u'' marker for
+# literal strings, and alternative solutions like "from __future__ import
+# unicode_literals" have other problems (see PEP 414).  u() can be applied
+# to ascii strings that include \u escapes (but they must not contain
+# literal non-ascii characters).
+if type('') is not type(b''):
+    def u(s):
+        return s
+
+    bytes_type = bytes
+    unicode_type = str
+    basestring_type = str
+else:
+    def u(s):
+        return s.decode('unicode_escape')
+
+    bytes_type = str
+    unicode_type = unicode
+    basestring_type = basestring
+
 logger = logging.getLogger("dash.py")
 
 
@@ -49,7 +69,7 @@ def download_and_extract(package, extract_path):
         logger.error("Can't download package %s" % name)
         sys.exit(5)
     f = StringIO()
-    f.write(r.content)
+    f.write(bytes_type(r.content))
     f.seek(0)
 
     file = None
@@ -96,10 +116,6 @@ class _LogFormatter(logging.Formatter):
         self._color = color
         if color:
 
-            try:
-                assert unicode
-            except NameError:
-                unicode = str
             # The curses module has some str/bytes confusion in
             # python3.  Until version 3.2.3, most methods return
             # bytes, but only accept strings.  In addition, we want to
@@ -112,14 +128,14 @@ class _LogFormatter(logging.Formatter):
             if (3, 0) < sys.version_info < (3, 2, 3):
                 fg_color = unicode(fg_color, "ascii")
             self._colors = {
-                logging.DEBUG: unicode(curses.tparm(fg_color, 4),  # Blue
-                                       "ascii"),
-                logging.INFO: unicode(curses.tparm(fg_color, 2),  # Green
-                                      "ascii"),
-                logging.WARNING: unicode(curses.tparm(fg_color, 3),  # Yellow
-                                         "ascii"),
-                logging.ERROR: unicode(curses.tparm(fg_color, 1),  # Red
-                                       "ascii"),
+                logging.DEBUG: unicode_type(curses.tparm(fg_color, 4),
+                                            "ascii"),  # Blue
+                logging.INFO: unicode_type(curses.tparm(fg_color, 2),
+                                           "ascii"),  # Green
+                logging.WARNING: unicode_type(curses.tparm(fg_color, 3),
+                                              "ascii"),  # Yellow
+                logging.ERROR: unicode_type(curses.tparm(fg_color, 1),
+                                            "ascii"),  # Red
             }
             self._normal = unicode(curses.tigetstr("sgr0"), "ascii")
 
