@@ -76,7 +76,8 @@ def install(name):
             install_package({
                 "name": name,
                 "type": "docset",
-                "url": url
+                "url": url,
+                "format": "tar"
             })
             return
     logger.error("Can't find package %s" % name)
