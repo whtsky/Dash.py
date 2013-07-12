@@ -1,7 +1,7 @@
 Dash.py
 =======
 
-Create python docs for dash easily.
+Dash.py is a tool that helps you install python documents to Dash easily.
 
 Usage
 -------------
