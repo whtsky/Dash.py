@@ -1,14 +1,13 @@
 import os
+import tempfile
 import shutil
-import time
+import requests
 
 from .utils import download_and_extract, logger, call
 
 DEFAULT_DOCSET_PATH = os.path.expanduser(
     '~/Library/Application Support/dash.py/DocSets'
 )
-
-random_path = lambda: os.path.join("/tmp", str(time.time()))
 
 
 def add_to_dash(docset_path):
@@ -27,10 +26,9 @@ def generate_docset(package, document_path):
     if "icon" in package:
         icon_path = package["icon"]
         if "//" in icon_path:
-            import requests
             r = requests.get(icon_path)
             if r.status_code == 200:
-                icon_path = random_path() + '.png'
+                icon_path = tempfile.mkstemp('.png')[1]
                 with open(icon_path, "w") as f:
                     f.write(r.content)
                 command += " --icon %s" % icon_path
@@ -46,7 +44,7 @@ def generate_docset(package, document_path):
 
 
 def html_installer(package):
-    dirname = random_path()
+    dirname = tempfile.mkdtemp()
     download_and_extract(package, dirname)
 
     if "floder_name" not in package:
@@ -68,17 +66,18 @@ def docset(package):
 
 
 def sphinx(package):
-    repo_path = random_path()
+    repo_path = tempfile.mkdtemp()
     download_and_extract(package, repo_path)
     doc_path = package.get("sphinx_doc_path", "docs")
     doc_path = os.path.join(repo_path, doc_path)
 
-    document_path = random_path()
-    if call("sphinx-build -b html %s %s" % (doc_path, document_path)):
+    document_path = tempfile.mkdtemp()
+    command = "sphinx-build -b html %s %s" % (doc_path, document_path)
+    if call(command):
         generate_docset(package, document_path)
+        shutil.rmtree(repo_path)
     else:
         logger.error("Can't build doc for package %s" % package["name"])
-    shutil.rmtree(repo_path)
 
 
 INSTALLER = {
