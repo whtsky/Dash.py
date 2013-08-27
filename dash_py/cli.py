@@ -21,7 +21,7 @@ PACKAGES_PATH = os.path.join(
 import dash_py
 from parguments import Parguments
 from .installer import install_package
-from .utils import enable_pretty_logging, logger
+from .utils import enable_pretty_logging, logger, resource_exist
 
 parguments = Parguments(__doc__, version=dash_py.__version__)
 
@@ -48,8 +48,7 @@ def install(name):
         else:
             url = "https://raw.github.com/whtsky/Dash.py/" \
                   "master/dash_py/packages/%s.yaml" % name
-        r = requests.head(url)
-        if r.status_code == 200:
+        if resource_exist(url):
             r = requests.get(url)
             content = r.content
 
@@ -70,17 +69,29 @@ def install(name):
     for branch in ['stable', 'master', 'latest']:
         if branch not in r.content:
             continue
-        url = "https://media.readthedocs.org/dash/" \
+        docset_url = "https://media.readthedocs.org/dash/" \
               "{0}/{1}/{2}.tgz".format(name.lower(), branch, name)
-        if requests.head(url).status_code == 200:
+        zip_url = "https://media.readthedocs.org/htmlzip/" \
+                  "{0}/{1}/{0}.zip".format(name.lower(), branch)
+        if resource_exist(docset_url):
             install_package({
                 "name": name,
                 "type": "docset",
-                "url": url,
+                "url": docset_url,
                 "format": "tar"
             })
             return
+        elif resource_exist(zip_url):
+            install_package({
+                "name": name,
+                "type": "html",
+                "url": zip_url,
+                "format": "zip"
+            })
+            return
+
     logger.error("Can't find package %s" % name)
+    return -1
 
 
 def main():

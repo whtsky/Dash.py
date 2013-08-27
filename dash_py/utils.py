@@ -16,7 +16,6 @@ except ImportError:
 
 try:
     from cStringIO import StringIO
-
     assert StringIO
 except ImportError:
     from io import StringIO
@@ -42,6 +41,15 @@ else:
     basestring_type = basestring
 
 logger = logging.getLogger("dash.py")
+
+
+def resource_exist(url):
+    r = requests.head(url)
+    try:
+        r.raise_for_status()
+        return True
+    except requests.HTTPError:
+        return False
 
 
 def call(command, silence=True, **kwargs):
