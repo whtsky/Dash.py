@@ -1,5 +1,4 @@
 import sys
-import shlex
 import time
 import logging
 import zipfile
@@ -56,7 +55,8 @@ def call(command, silence=True, **kwargs):
     if silence:
         kwargs["stderr"] = subprocess.PIPE
         kwargs["stdout"] = subprocess.PIPE
-    code = subprocess.call(shlex.split(command), **kwargs)
+    kwargs.setdefault("shell", True)
+    code = subprocess.call(command, **kwargs)
     return code == 0
 
 
@@ -67,6 +67,12 @@ def download_and_extract(package, extract_path):
     if format == 'git':
         logger.info("Cloning package %s" % name)
         if not call("git clone %s %s" % (url, extract_path)):
+            logger.error("Can't clone package %s" % name)
+            sys.exit(5)
+        return
+    elif format == 'hg':
+        logger.info("Cloning package %s" % name)
+        if not call("hg clone %s %s" % (url, extract_path)):
             logger.error("Can't clone package %s" % name)
             sys.exit(5)
         return
