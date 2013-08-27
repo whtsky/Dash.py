@@ -12,13 +12,14 @@ Options:
 import os
 import yaml
 import requests
+import dash_py
 
 PACKAGES_PATH = os.path.join(
     os.path.abspath(os.path.dirname(__file__)),
     "packages"
 )
 
-import dash_py
+from bs4 import BeautifulSoup
 from parguments import Parguments
 from .installer import install_package
 from .utils import enable_pretty_logging, logger, resource_exist
@@ -63,8 +64,7 @@ def install(name):
         logger.error("Can't find package %s" % name)
         return
 
-    from pyquery import PyQuery
-    name = PyQuery(r.content)("title").html().split("|")[0].strip()
+    name = BeautifulSoup(r.content).title.string.split("|")[0].strip()
 
     for branch in ['stable', 'master', 'latest']:
         if branch not in r.content:
