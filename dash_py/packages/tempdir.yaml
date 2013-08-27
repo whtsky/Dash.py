@@ -1,0 +1,5 @@
+name: tempdir
+type: sphinx
+format: git
+url: https://bitbucket.org/another_thomas/tempdir
+sphinx_doc_path: docs
