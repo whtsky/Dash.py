@@ -77,7 +77,7 @@ def download_and_extract(package, extract_path):
     if r.status_code != 200:
         logger.error("Can't download package %s" % name)
         sys.exit(5)
-    downloaded_file_path = tempfile.mkstemp()
+    downloaded_file_path = tempfile.mkstemp()[1]
     with open(downloaded_file_path, "wb") as f:
         f.write(r.content)
 
