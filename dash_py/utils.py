@@ -83,16 +83,18 @@ def download_and_extract(package, extract_path):
 
     file = None
 
-    if format == 'zip':
-        file = zipfile.ZipFile(downloaded_file_path)
-    elif format == 'tar':
-        file = tarfile.open(fileobj=downloaded_file_path)
+    with open(downloaded_file_path, "r") as f:
 
-    try:
-        file.extractall(extract_path)
-    except:
-        logger.error("Can't extract package %s" % name)
-        sys.exit(1)
+        if format == 'zip':
+            file = zipfile.ZipFile(f)
+        elif format == 'tar':
+            file = tarfile.open(fileobj=f)
+
+        try:
+            file.extractall(extract_path)
+        except:
+            logger.error("Can't extract package %s" % name)
+            sys.exit(1)
     file.close()
     os.remove(downloaded_file_path)
 
