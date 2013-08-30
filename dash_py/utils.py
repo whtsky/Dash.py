@@ -1,6 +1,8 @@
+import os
 import sys
 import time
 import logging
+import tempfile
 import zipfile
 import tarfile
 import requests
@@ -8,16 +10,9 @@ import subprocess
 
 try:
     import curses
-
     assert curses
 except ImportError:
     curses = None
-
-try:
-    from cStringIO import StringIO
-    assert StringIO
-except ImportError:
-    from io import StringIO
 
 # Fake unicode literal support:  Python 3.2 doesn't have the u'' marker for
 # literal strings, and alternative solutions like "from __future__ import
@@ -82,24 +77,24 @@ def download_and_extract(package, extract_path):
     if r.status_code != 200:
         logger.error("Can't download package %s" % name)
         sys.exit(5)
-    f = StringIO()
-    f.write(str(r.content))
-    f.seek(0)
+    downloaded_file_path = tempfile.mkstemp()
+    with open(downloaded_file_path, "wb") as f:
+        f.write(r.content)
 
     file = None
 
     if format == 'zip':
-        file = zipfile.ZipFile(f)
+        file = zipfile.ZipFile(downloaded_file_path)
     elif format == 'tar':
-        file = tarfile.open(fileobj=f)
+        file = tarfile.open(fileobj=downloaded_file_path)
 
     try:
         file.extractall(extract_path)
     except:
         logger.error("Can't extract package %s" % name)
-        sys.exit(5)
+        sys.exit(1)
     file.close()
-    f.close()
+    os.remove(downloaded_file_path)
 
 
 def enable_pretty_logging(level='info'):
