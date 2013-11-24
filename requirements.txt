@@ -1,6 +1,4 @@
 beautifulsoup4==4.3.2
-coverage==3.7
-distribute==0.7.3
 doc2dash==1.1.0
 docopt==0.6.1
 docutils==0.11
@@ -11,4 +9,4 @@ parguments==0.3.2
 Pygments==1.6
 PyYAML==3.10
 requests==2.0.1
-Sphinx==1.2b3
+Sphinx==1.1.3
