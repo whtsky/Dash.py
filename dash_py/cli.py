@@ -71,6 +71,8 @@ def install(name):
             continue
         docset_url = "https://media.readthedocs.org/dash/" \
                      "{0}/{1}/{2}.tgz".format(name.lower(), branch, name)
+        zip_url = "https://media.readthedocs.org/htmlzip/" \
+                  "{0}/{1}/{0}.zip".format(name.lower(), branch)
         if resource_exist(docset_url):
             install_package({
                 "name": name,
@@ -79,6 +81,14 @@ def install(name):
                 "format": "tar"
             })
             return
+        elif resource_exist(zip_url):
+            install_package({
+                "name": name,
+                "type": "html",
+                "url": zip_url,
+                "format": "zip"
+            })
+            return 
 
     logger.error("Can't find package %s" % name)
     return -1
