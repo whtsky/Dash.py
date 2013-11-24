@@ -88,7 +88,7 @@ def install(name):
                 "url": zip_url,
                 "format": "zip"
             })
-            return 
+            return
 
     logger.error("Can't find package %s" % name)
     return -1

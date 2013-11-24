@@ -12,7 +12,7 @@ def assert_docset_exists(name):
     assert os.path.exists(plist_path), name
 
 
-def test():
+def test_packages():
     for f in os.listdir(PACKAGES_PATH):
         if not f.endswith('.yaml'):
             continue
@@ -22,6 +22,12 @@ def test():
         call("dash.py install %s" % name.lower(), silence=False)
         assert_docset_exists(name)
 
-    # Download from RTFD
+
+def test_download_docset_from_rtfd():
     call("dash.py install requests", silence=False)
     assert_docset_exists("requests")
+
+
+def test_download_zip_from_rtfd():
+    call("dash.py install chump", silence=False)
+    assert_docset_exists("Chump")
