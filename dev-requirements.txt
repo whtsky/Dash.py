@@ -1,3 +1,4 @@
+-r requirements.txt
 cov-core==1.7
 coverage==3.7
 flake8==2.1.0
