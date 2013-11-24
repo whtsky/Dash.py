@@ -41,7 +41,7 @@ It should be a vailed yaml file.
 It looks like ::
 
     name: Jinja2 # Package name
-    type: html # Type. Supported types are ``html`` and ``sphinx``
+    type: html # Type. Supported types are ``html`` , ``docset`` and ``sphinx``
     format: zip  # Format. Should be either ``zip``, ``tar`` or ``git``. Note that Gzipped Tar file should be ``tar``
     url: http://jinja.pocoo.org/docs/jinja-docs.zip  # URL to download the file or to clone the git repo.
     icon: _static/jinja-small.png  # OPTIONAL. path to icon file.
