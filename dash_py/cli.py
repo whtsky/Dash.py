@@ -65,9 +65,10 @@ def install(name):
         return
 
     name = BeautifulSoup(r.content).title.string.split("|")[0].strip()
+    html_content = str(r.content)
 
     for branch in ['stable', 'master', 'latest']:
-        if branch not in r.content:
+        if branch not in html_content:
             continue
         docset_url = "https://media.readthedocs.org/dash/" \
                      "{0}/{1}/{2}.tgz".format(name.lower(), branch, name)
